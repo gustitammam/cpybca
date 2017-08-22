@@ -4,7 +4,8 @@ import datetime
 import hashlib
 import hmac
 import json
-import urllib
+import pytz
+import urllib2
 
 class Bca():
     ''' Module to integrate with BCA API.
@@ -27,17 +28,17 @@ class Bca():
         '''
         try:
             if data:
-                request = urllib.request.Request(url, data=data, headers=headers)
+                request = urllib2.Request(url, data=data, headers=headers)
             else:
-                request = urllib.request.Request(url, headers=headers)
-            with urllib.request.urlopen(request) as response:
-                response_data = json.loads(response.read().decode('UTF-8'))
-                return response_data
-        except urllib.error.HTTPError as err:
+                request = urllib2.Request(url, headers=headers)
+            response = urllib2.urlopen(request)
+            response_data = json.loads(response.read().decode('UTF-8'))
+            return response_data
+        except urllib2.HTTPError as err:
             error_content = json.loads(err.read().decode('UTF-8'))
             # print(error_content)
             raise ValueError(error_content['ErrorMessage']['English'])
-        except urllib.error.URLError:
+        except urllib2.URLError:
             raise ValueError('Something wrong with network connection or server')
 
     def _generate_signature(self, relative_url, timestamp, http_method='GET', request_body=b''):
@@ -80,7 +81,8 @@ class Bca():
         })
         url = self.host + relative_url
 
-        timestamp = datetime.datetime.now(datetime.timezone.utc).astimezone().isoformat()
+        # timestamp = datetime.datetime.now(datetime.timezone.utc).astimezone().isoformat()
+        timestamp = datetime.datetime.now(pytz.timezone("UTC")).astimezone(pytz.timezone("UTC")).isoformat()
         timestamp = timestamp[:23] + timestamp[26:]
         signature = self._generate_signature(relative_url, timestamp)
 
