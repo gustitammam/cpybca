@@ -180,7 +180,7 @@ class BcaEWallet(Bca):
 
         self.register_user_path = '/ewallet/customers'
 
-    def register_user(self, customer_name, date_of_birth, primary_id, mobile_number, customer_number, email, company_code, id_number):
+    def register_user(self, customer_name, date_of_birth, primary_id, mobile_number, customer_number, email, id_number):
         relative_url = self.register_user_path
         url = self.host + relative_url
 
