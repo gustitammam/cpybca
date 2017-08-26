@@ -11,7 +11,7 @@ class Bca():
     ''' Module to integrate with BCA API.
     '''
 
-    def __init__(self, api_key, api_secret, host='https://sandbox.bca.co.id'):
+    def __init__(self, api_key, api_secret, host='https://api.finhacks.id'):
         self.api_key = api_key
         self.api_secret = api_secret
         self.access_token = ''
