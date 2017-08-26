@@ -181,6 +181,7 @@ class BcaEWallet(Bca):
         self.register_user_path = '/ewallet/customers'
         self.get_user_path = '/ewallet/customers/{company_code}/{primary_id}'
         self.topup_path = '/ewallet/topup'
+        self.ewallet_tranfer_path = '/ewallet/transfers'
 
     def register_user(self, customer_name, date_of_birth, primary_id, mobile_number, customer_number, email, id_number):
         relative_url = self.register_user_path
@@ -241,6 +242,37 @@ class BcaEWallet(Bca):
 
     def topup(self, primary_id, transaction_id, request_date, amount, currency_code="IDR"):
         relative_url = self.topup_path
+        url = self.host + relative_url
+
+        timestamp = self._generate_timestamp(self.current_tz)
+        request_body = {
+            'CompanyCode': self.company_code,
+            'PrimaryID': primary_id,
+            'TransactionID': transaction_id,
+            'RequestDate': request_date,
+            'Amount': amount,
+            'CurrencyCode': currency_code,
+        }
+
+        data = json.dumps(request_body, separators=(',', ':')).encode()
+        signature = self._generate_signature(relative_url, timestamp, 'POST', data)
+
+        headers = {
+            'Authorization': 'Bearer {}'.format(self.access_token),
+            'Content-Type': 'application/json',
+            'Origin': 'cpybca.com',
+            'X-BCA-Key': self.api_key,
+            'X-BCA-Timestamp': timestamp,
+            'X-BCA-Signature': signature
+        }
+
+        response_data = self._open_url(url, data=data, headers=headers)
+        return response_data
+
+    # TODO: Need OTP ?
+
+    def ewallet_transfer(self, primary_id, transaction_id, request_date, amount, currency_code="IDR"):
+        relative_url = self.ewallet_tranfer_path
         url = self.host + relative_url
 
         timestamp = self._generate_timestamp(self.current_tz)
