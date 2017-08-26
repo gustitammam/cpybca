@@ -89,7 +89,7 @@ class Bca():
         url = self.host + relative_url
 
         # timestamp = datetime.datetime.now(datetime.timezone.utc).astimezone().isoformat()
-        timestamp = self._generate_timestamp
+        timestamp = self._generate_timestamp(self.current_tz)
         signature = self._generate_signature(relative_url, timestamp)
 
         headers = {
