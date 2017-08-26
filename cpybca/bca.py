@@ -179,6 +179,7 @@ class BcaEWallet(Bca):
         self.company_code = company_code
 
         self.register_user_path = '/ewallet/customers'
+        self.get_user_path = '/ewallet/customers/{company_code}/{primary_id}'
 
     def register_user(self, customer_name, date_of_birth, primary_id, mobile_number, customer_number, email, id_number):
         relative_url = self.register_user_path
@@ -209,4 +210,28 @@ class BcaEWallet(Bca):
         }
 
         response_data = self._open_url(url, data=data, headers=headers)
+        return response_data
+
+    def get_user_data(self, primary_id):
+        ''' Get user data.
+        '''
+        relative_url = self.get_user_path.format(**{
+            'company_code': self.company_code,
+            'primary_id': primary_id
+        })
+        url = self.host + relative_url
+
+        timestamp = self._generate_timestamp(self.current_tz)
+        signature = self._generate_signature(relative_url, timestamp)
+
+        headers = {
+            'Authorization': 'Bearer {}'.format(self.access_token),
+            'Content-Type': 'application/json',
+            'Origin': 'cpybca.com',
+            'X-BCA-Key': self.api_key,
+            'X-BCA-Timestamp': timestamp,
+            'X-BCA-Signature': signature
+        }
+
+        response_data = self._open_url(url, headers=headers)
         return response_data
