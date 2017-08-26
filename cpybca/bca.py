@@ -179,7 +179,7 @@ class BcaEWallet(Bca):
         self.company_code = company_code
 
         self.register_user_path = '/ewallet/customers'
-        self.get_user_path = '/ewallet/customers/{company_code}/{primary_id}',
+        self.get_user_path = '/ewallet/customers/{company_code}/{primary_id}'
         self.topup_path = '/ewallet/topup'
 
     def register_user(self, customer_name, date_of_birth, primary_id, mobile_number, customer_number, email, id_number):
