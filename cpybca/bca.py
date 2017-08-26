@@ -15,6 +15,7 @@ class Bca():
         self.api_key = api_key
         self.api_secret = api_secret
         self.access_token = ''
+        self.current_tz = 'Asia/Jakarta'
 
         self.host = host
         self.oauth_path = '/api/oauth/token'
@@ -49,6 +50,12 @@ class Bca():
             ':' + hashlib.sha256(request_body.replace(b' ', b'')).hexdigest() + ':' + timestamp
         signature.update(string_to_sign.encode())
         return signature.hexdigest()
+
+    def _generate_timestamp(self, timezone_code):
+        tz = pytz.timezone(timezone_code)
+        timestamp = datetime.datetime.now(tz).astimezone(tz).isoformat()
+        timestamp = timestamp[:23] + timestamp[26:]
+        return timestamp
 
     def sign_in(self, client_id, client_secret):
         ''' Signing in client and get access token.
