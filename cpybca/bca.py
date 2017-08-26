@@ -19,7 +19,7 @@ class Bca():
 
         self.host = host
         self.oauth_path = '/api/oauth/token'
-        self.get_balance_path = '/banking/v2/corporates/{corporate_id}/accounts/{account_number}'
+        self.get_balance_path = '/banking/v4/corporates/{corporate_id}/accounts/{account_number}'
         self.get_statement_path = '/banking/v2/corporates/{corporate_id}/accounts/' \
             '{account_number}/statements?EndDate={end_date}&StartDate={start_date}'
         self.transfer_path = '/banking/corporates/transfers'
