@@ -7,7 +7,7 @@ import json
 import pytz
 import urllib2
 
-class Bca():
+class Bca(object):
     ''' Module to integrate with BCA API.
     '''
 
@@ -155,6 +155,47 @@ class Bca():
             request_body['Remark1'] = remark1
         if remark2:
             request_body['Remark2'] = remark2
+        data = json.dumps(request_body, separators=(',', ':')).encode()
+        signature = self._generate_signature(relative_url, timestamp, 'POST', data)
+
+        headers = {
+            'Authorization': 'Bearer {}'.format(self.access_token),
+            'Content-Type': 'application/json',
+            'Origin': 'cpybca.com',
+            'X-BCA-Key': self.api_key,
+            'X-BCA-Timestamp': timestamp,
+            'X-BCA-Signature': signature
+        }
+
+        response_data = self._open_url(url, data=data, headers=headers)
+        return response_data
+
+
+class BcaEWallet(Bca):
+
+    def __init__(self, api_key, api_secret, company_code, host='https://api.finhacks.id'):
+        super(BcaEWallet, self).__init__(api_key, api_secret, host)
+
+        self.company_code = company_code
+
+        self.register_user_path = '/ewallet/customers'
+
+    def register_user(self, customer_name, date_of_birth, primary_id, mobile_number, customer_number, email, company_code, id_number):
+        relative_url = self.register_user_path
+        url = self.host + relative_url
+
+        timestamp = self._generate_timestamp(self.current_tz)
+        request_body = {
+            'CustomerName': customer_name,
+            'DateOfBirth': date_of_birth,
+            'PrimaryID': primary_id,
+            'MobileNumber': mobile_number,
+            'EmailAddress': email,
+            'CompanyCode': self.company_code,
+            'CustomerNumber': customer_number,
+            'IDNumber': id_number
+        }
+
         data = json.dumps(request_body, separators=(',', ':')).encode()
         signature = self._generate_signature(relative_url, timestamp, 'POST', data)
 
